@@ -6,7 +6,7 @@
 # What work and what doesn't
 
 Works:
-* Native NVRAM(super happy about this one)
+* Native NVRAM
 * Bootcamp
 * Sleep
 * USB power(Including iPad Pro 12.9 Charging!)
@@ -73,10 +73,13 @@ Hardware:
 * 32GB 2666Mhz (4x8GB)
 * Apple BCM94360CD
 
-BIOS settings:
-* CFG-Lock: Disable
+Main important BIOS settings:
+
+* Asus Multicore: Auto
+* CPU Core Ratio: All Core Sync
+* MSR Lock: Disabled
    * If can't disable, turn on `AppleCpuPmCfgLock` and `AppleXcpmCfgLock`. Without this, you won't go far for install.
-* UEFI mode
-* CSM: Off
-* legacy USB: Off
-* Mass Storage Device: Off
+* Legacy USB: Disabled
+* Above 4G ecoding: Enabled
+* CSM: Disabled
+* OS Type: Windows UEFI
