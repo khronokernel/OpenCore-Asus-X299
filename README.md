@@ -60,7 +60,7 @@ Other kexts that are needed regardless of system:
 
 
 X299 Firmware Driver specifics:
-* `UsbKbDxe.efi`: OpenCore's built-in drivers don't work with `PollAppleHotKeys`
+* `UsbKbDxe.efi`: Some firmwares won't work with OpenCore's built-in drivers when using `PollAppleHotKeys`
 
 # Hardware Specifics
 
