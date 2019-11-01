@@ -48,15 +48,22 @@ X299 kexts specifics:
 
 * `X299-Map`: Maps USB chipset ports, **please make your own as this is just an example**
 * `AsMedia-Map`: Maps AsMedia 3.1 ports, both front and rear(front panel needs proper testing), **Please make your own as this is just an example**
-* `VoodooTSCSync`: Synchronize the TSC, can be fixed via OpenCore as well. Change `IOCPUNumber` inside the `Info.plist` to 1 less than total number of threads. This was needed to boot macOS
-* `IntelMausiEthernet`: Running an Intel I219V controller
+* [`VoodooTSCSync`](https://github.com/RehabMan/VoodooTSCSync): Synchronize the TSC, can be fixed via OpenCore as well.
+
 
 Other kexts that are needed regardless of system:
 
-* `VirtualSMC`
-* `Lilu`
-* `AppleALC`
-* `WhateverGreen`
+* [`VirtualSMC`](https://github.com/acidanthera/VirtualSMC)
+* [`Lilu`](https://github.com/vit9696/Lilu/releases)
+* [`AppleALC`](https://github.com/vit9696/AppleALC/releases)
+* [`WhateverGreen`](https://github.com/acidanthera/WhateverGreen/releases)
+
+Ethernet:
+
+* [`IntelMausiEthernet`](https://github.com/Mieze/IntelMausiEthernet): For most intel controllers.
+* [`I211-AT SmallTree kext`](https://cdn.discordapp.com/attachments/390417931659378688/556912824228773888/SmallTree-Intel-211-AT-PCIe-GBE.kext.zip): For newer chipsets are based off of I211-AT.
+* [`AtherosE2200Ethernet`](https://github.com/Mieze/AtherosE2200Ethernet): Required for Atheros and Killer NICs
+* [`RealtekRTL8111`](https://github.com/Mieze/RTL8111_driver_for_OS_X): Required for Realtek NICs
 
 
 X299 Firmware Driver specifics:
