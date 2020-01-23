@@ -1,12 +1,10 @@
- ![](https://imgur.com/a/j7mgKkK)
- 
- ![About This Mac](https://i.imgur.com/kp7ymS0.png)
+![About This Mac](https://i.imgur.com/kp7ymS0.png)
  
  
  What's this for? Not too many X299 hardware running macOS, let alone OpenCore so thought I'd post this ;p 
  Please use this as a base **and not a guide**. Inital setup please follow the [OpenCore Vanilla Desktop Guide](https://khronokernel-2.gitbook.io/opencore-vanilla-desktop-guide/)
  
- I also include a clover config as well in case you feel your issues are OpenCore based, please note that the OpenCore config is for 0.5.2. 
+ I also include a clover config as well in case you feel your issues are OpenCore based, please note that the OpenCore config is for 0.5.4. 
  
 # What work and what doesn't
 
