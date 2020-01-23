@@ -1,7 +1,12 @@
+ ![](https://imgur.com/a/j7mgKkK)
+ 
+ ![About This Mac](https://i.imgur.com/kp7ymS0.png)
+ 
+ 
  What's this for? Not too many X299 hardware running macOS, let alone OpenCore so thought I'd post this ;p 
  Please use this as a base **and not a guide**. Inital setup please follow the [OpenCore Vanilla Desktop Guide](https://khronokernel-2.gitbook.io/opencore-vanilla-desktop-guide/)
  
- I also include a clover config as well in case you feel your issues are OpenCore based, please note that the OpenCore config is for 0.5.2. You'll need to update to support 
+ I also include a clover config as well in case you feel your issues are OpenCore based, please note that the OpenCore config is for 0.5.2. 
  
 # What work and what doesn't
 
@@ -34,23 +39,26 @@ Doesn't work:
 X299 config.plist specifics:
 * `slide=N`
 * `DisableIoMapper` set to `YES`
-* Ethernet set to `built-in`
-* `AppleRTC` kernel Patches(reboots into BIOS safemode)
 * `layout-id` set to 11
 * iMacPro1,1 or MacPro7,1 SMBIOS
 
 
 X299 SSDTs specifics:
-* `SSDT-EC-USBX-X299`: Powers off `EC0` controller and creates a fake EC just for macOS, needed for all Catalina users. [See here for more info](https://www.reddit.com/r/hackintosh/comments/den28t/whats_new_in_macos_catalina/)
-* `SSDT-PLUG-X299`: Sets `Plugin-type=1` to `CP00`
-* `SSDT-SBUS-MCHC`: Creates SMbus device and resolves issues with DeviceProperties injection for using SSDTs like `SSDT-XHCI`, `SSDT-XHCX` and `SSDT-SATA`
-* `SSDT-XHCI`, `SSDT-XHCX` and `SSDT-SATA`: DeviceProperties injection, mostly cosmetic
+* `SSDT-EC-USBX-X299`: 
+   * Powers off `EC0` controller and creates a fake EC just for macOS, needed for all Catalina users. [See here for more info](https://khronokernel.github.io/EC-fix-guide/), PCI path differs from the OpenCore sample by having PC00 path( `SB.PC00.LPC0`)
+* `SSDT-PLUG-X299`: 
+   * Sets `Plugin-type=1` to `SB.SCK0.CP00`
+* `SSDT-SBUS-MCHC`: 
+   * Creates SMbus device and resolves issues with DeviceProperties injection for using SSDTs like `SSDT-XHCX`
+* `SSDT-XHCX`
+   * Renames AsMedia controllers to XHC2/XHC3 so USB mapping may work
 
 X299 kexts specifics:
 
-* `X299-Map`: Maps USB chipset ports, **please make your own as this is just an example**
-* `AsMedia-Map`: Maps AsMedia 3.1 ports, both front and rear(front panel needs proper testing), **Please make your own as this is just an example**
-* [`VoodooTSCSync`](https://github.com/RehabMan/VoodooTSCSync): Synchronize the TSC, can be fixed via OpenCore as well.
+* `X299-Map`: 
+   * Maps USB ports incluing AsMedia, **please make your own as this is just an example**
+* [`VoodooTSCSync`](https://github.com/RehabMan/VoodooTSCSync): 
+   * Synchronize the TSC, **required to boot on Asus X299 and other HEDT systems**
 
 
 Other kexts that are needed regardless of system:
@@ -63,13 +71,6 @@ Other kexts that are needed regardless of system:
 Ethernet:
 
 * [`IntelMausiEthernet`](https://github.com/Mieze/IntelMausiEthernet): For most intel controllers.
-* [`I211-AT SmallTree kext`](https://cdn.discordapp.com/attachments/390417931659378688/556912824228773888/SmallTree-Intel-211-AT-PCIe-GBE.kext.zip): For newer chipsets are based off of I211-AT.
-* [`AtherosE2200Ethernet`](https://github.com/Mieze/AtherosE2200Ethernet): Required for Atheros and Killer NICs
-* [`RealtekRTL8111`](https://github.com/Mieze/RTL8111_driver_for_OS_X): Required for Realtek NICs
-
-
-X299 Firmware Driver specifics:
-* `UsbKbDxe.efi`: Some firmwares won't work with OpenCore's built-in drivers when using `PollAppleHotKeys`
 
 # Hardware Specifics
 
