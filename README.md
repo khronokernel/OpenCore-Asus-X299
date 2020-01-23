@@ -91,3 +91,6 @@ Main important BIOS settings:
 * Above 4G ecoding: Enabled
 * CSM: Disabled
 * OS Type: Windows UEFI
+
+
+![](https://i.imgur.com/mFDjmmZ.mp4)
