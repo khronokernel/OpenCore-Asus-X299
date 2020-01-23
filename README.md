@@ -92,5 +92,3 @@ Main important BIOS settings:
 * CSM: Disabled
 * OS Type: Windows UEFI
 
-
-![](https://i.imgur.com/mFDjmmZ.mp4)
