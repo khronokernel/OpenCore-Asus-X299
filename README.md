@@ -9,6 +9,8 @@
 # What work and what doesn't
 
 Works:
+* macOS High Sierra, Mojave, Catalina and Big Sur
+  * See below on note regarding Big Sur support
 * Native NVRAM
 * Bootcamp
 * Sleep
@@ -19,7 +21,6 @@ Works:
 * [Display Brightness and Volume with Apple Keyboard](https://github.com/the0neyouseek/MonitorControl/releases)
 * CPU Name
    * Easy fix under `PlatformInfo->SMBIOS->ProcessorType->3841`
-* macOS High Sierra, Mojave and Catalina
 * Boot Chime to internal speaker(hooked up a genuine PowerMac speaker)
 * OpenCore GUI
   * Above 2 will require the resources folder to be populated with files from here: [OcBinaryData](https://github.com/acidanthera/OcBinaryData)
@@ -30,6 +31,12 @@ Doesn't work:
 * Onboard Bluetooth: Works inconsistently, replaced with BCM94360CD so didn't look into it, see [this thread](https://github.com/daliansky/XiaoMi-Pro-Hackintosh/issues/262) for some ideas.
 * SideCar: Since 10.15.4, I've not been able to get sidecar working, been actively looking for fixes though:  [Sidecar not working on iGPU-less systems reliably](https://github.com/AMD-OSX/bugtracker/issues/1)
  
+Big Sur note:
+
+* To run macOS Big Sur, you'll need the following:
+  * Lastest builds of all your kexts
+  * Build of OpenCore 0.6.0
+  * Installed version of 
 
 # OpenCore Specifics
 
