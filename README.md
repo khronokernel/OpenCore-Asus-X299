@@ -36,7 +36,18 @@ Big Sur note:
 * To run macOS Big Sur, you'll need the following:
   * Lastest builds of all your kexts
   * Build of OpenCore 0.6.0
-  * Installed version of 
+  * Big Sur installed on some media(kext injection in the installer is not yet supported with OpenCore)
+    * VM or real mac will be required
+  * RTC patch
+  
+For the last one, this is due to Asus not mapping all the RTC regions for some reason. Specifically skipping regions 0x72 and 0x73. And in Big Sur, AppleRTC gets a lot saltier with this and won't boot. So we force in the extra regions with a simple 0x02 to 0x04 replace, see below patch:
+
+Under ACPI -> Patch
+
+* Find:
+  * `5F435253 11180A15 47017000 70000102 47017400 74000104 22000179`
+* Replace:
+  * `5F435253 11180A15 47017000 70000104 47017400 74000104 22000179`
 
 # OpenCore Specifics
 
