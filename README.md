@@ -6,6 +6,13 @@
  
  I also include a clover config as well in case you feel your issues are OpenCore based, please note that the OpenCore config is for 0.5.9 
  
+ **Note**: This system was built with the BIOS Version 2002, and I've had reports that Version 3006 has broken a few things:
+ 
+ * BIOS cannot properly unlock the MSR E2 register
+   * This will require AppleCpuPmCfgLock and AppleXcpmCfgLock enabled
+ * AWAC clock has been added
+   * This will require [SSDT-AWAC](https://github.com/acidanthera/OpenCorePkg/blob/master/Docs/AcpiSamples/SSDT-AWAC.dsl)
+ 
 # What work and what doesn't
 
 Works:
