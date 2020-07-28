@@ -78,14 +78,14 @@ Alternatively you can also use the sample SSDT-RTC0-RANGE, which may be better s
 
 ##### Add
 
-* [SSDT-EC-USBX-X299](../ACPI-Compiled/SSDT-EC-USBX-X299.aml)
+* [SSDT-EC-USBX-X299](/ACPI-Compiled/SSDT-EC-USBX-X299.aml)
   * Creates a fake EC and fixes USB power. Note I do not power off the original EC, reason for this is due to a huge mess around sleep and _GPE. Turning off this EC makes waking a pain without hacky fixes
-* [SSDT-PLUG-X299](../ACPI-Compiled/SSDT-PLUG-X299.aml)
+* [SSDT-PLUG-X299](/ACPI-Compiled/SSDT-PLUG-X299.aml)
   * Sets `Plugin-type=1` to `SB.SCK0.CP00` allowing for proper CPU power management
-* [SSDT-SBUS-MCHC](../ACPI-Compiled/SSDT-SBUS-MCHC.aml)
+* [SSDT-SBUS-MCHC](/ACPI-Compiled/SSDT-SBUS-MCHC.aml)
    * Creates SMBus device allowing AppleSMBus to load
-* [SSDT-RTC0-RANGE-v3006](../ACPI-Compiled/SSDT-RTC0-RANGE-v3006.aml)
-  * BIOS v2002 and older should use [SSDT-RTC0-RANGE-v2002](../ACPI-Compiled/SSDT-RTC0-RANGE-v2002.aml)
+* [SSDT-RTC0-RANGE-v3006](/ACPI-Compiled/SSDT-RTC0-RANGE-v3006.aml)
+  * BIOS v2002 and older should use [SSDT-RTC0-RANGE-v2002](/ACPI-Compiled/SSDT-RTC0-RANGE-v2002.aml)
   
 
 #### Booter
