@@ -1,6 +1,6 @@
 # OpenCore running on Asus X299-E Strix
 
-![](../images/aboutthismac.png)
+![](/images/aboutthismac.png)
  
  What's this for? Not too many X299 hardware running macOS, let alone OpenCore so thought I'd post this ;p 
  Please use this as a base **and not a guide** .For a proper guide, please follow the [OpenCore Desktop Guide](https://dortania.github.io/OpenCore-Install-Guide/)
