@@ -1,19 +1,18 @@
-![About This Mac](https://i.imgur.com/kp7ymS0.png)
- 
+# OpenCore running on Asus X299-E Strix
+
+![](../images/aboutthismac.png)
  
  What's this for? Not too many X299 hardware running macOS, let alone OpenCore so thought I'd post this ;p 
- Please use this as a base **and not a guide** .For a proper guide, please follow the [OpenCore Desktop Guide](https://dortania.github.io/OpenCore-Desktop-Guide/)
- 
- I also include a clover config as well in case you feel your issues are OpenCore based, please note that the OpenCore config is for 0.5.9 
+ Please use this as a base **and not a guide** .For a proper guide, please follow the [OpenCore Desktop Guide](https://dortania.github.io/OpenCore-Install-Guide/)
  
  **Note**: This system was built with the BIOS Version 2002, and I've had reports that Version 3006 has broken a few things:
  
  * BIOS cannot properly unlock the MSR E2 register
    * This will require AppleCpuPmCfgLock and AppleXcpmCfgLock enabled
  * AWAC clock has been added
-   * This will require [SSDT-AWAC](https://github.com/acidanthera/OpenCorePkg/blob/master/Docs/AcpiSamples/SSDT-AWAC.dsl)
+   * This will require [SSDT-RTC0-RANGE.dsl](https://github.com/acidanthera/OpenCorePkg/blob/master/Docs/AcpiSamples/SSDT-RTC0-RANGE.dsl)
  
-# What work and what doesn't
+## What work and what doesn't
 
 Works:
 * macOS High Sierra, Mojave, Catalina and Big Sur
@@ -28,7 +27,7 @@ Works:
 * [Display Brightness and Volume with Apple Keyboard](https://github.com/the0neyouseek/MonitorControl/releases)
 * CPU Name
    * Easy fix under `PlatformInfo->SMBIOS->ProcessorType->3841`
-* Boot Chime to internal speaker(hooked up a genuine PowerMac speaker)
+* Boot Chime to internal speaker(hooked up a genuine PowerMac speaker!)
 * OpenCore GUI
   * Above 2 will require the resources folder to be populated with files from here: [OcBinaryData](https://github.com/acidanthera/OcBinaryData)
 
@@ -40,64 +39,104 @@ Doesn't work:
  
 Big Sur note:
 
-* To run macOS Big Sur, you'll need the following:
-  * Lastest builds of all your kexts
+* To run macOS 11, Big Sur, you'll need the following:
+  * Latest builds of all your kexts
   * Build of OpenCore 0.6.0
-  * Big Sur installed on some media(kext injection in the installer is not yet supported with OpenCore)
-    * VM or real mac will be required
   * RTC patch
   
 For the last one, this is due to Asus not mapping all the RTC regions for some reason. Specifically skipping regions 0x72 and 0x73. And in Big Sur, AppleRTC gets a lot saltier with this and won't boot. So we force in the extra regions with a simple 0x02 to 0x04 replace, see below patch:
 
-Under ACPI -> Patch
+Under ACPI -> Patch:
+  
+| Comment | String | Fix RTC Range |
+| :--- | :--- | :--- |
+| Enabled | Boolean | YES |
+| Count | Number | 0 |
+| Limit | Number | 0 |
+| Find | Data | 5F435253 11180A15 47017000 70000102 47017400 74000104 22000179 |
+| Replace | Data | 5F435253 11180A15 47017000 70000104 47017400 74000104 22000179 |
 
-* Find:
-  * `5F435253 11180A15 47017000 70000102 47017400 74000104 22000179`
-* Replace:
-  * `5F435253 11180A15 47017000 70000104 47017400 74000104 22000179`
+Alternatively you can also use the sample SSDT-RTC0-RANGE, which may be better suited if you plan to dual boot with Linux and Windows often. I documented the process in OpenCorePkg: [SSDT-RTC0-RANGE.dsl](https://github.com/acidanthera/OpenCorePkg/blob/master/Docs/AcpiSamples/SSDT-RTC0-RANGE.dsl)
 
-# OpenCore Specifics
+## OpenCore Specifics
 
-X299 config.plist specifics:
-* `DevirtualiseMmio` + `ProvideCustomSlide`
-  * to fix allocation errors, no need for `slide=0`
-* `RebuildAppleMemoryMap` + `SyncRuntimePermissions`
-  * To fix widows booting
-* `DisableIoMapper` set to `YES`
-  * not needed if VT-D is disabled
-* `alc-layout-id` set to 1
-* iMacPro1,1 or MacPro7,1 SMBIOS
-  * Note that MacPro7,1 is Catalina only
-  * iMacPro1,1 will need WhateverGreen.kext as well
-
-
-X299 SSDTs specifics:
-* `SSDT-EC-USBX-X299`: 
-   * Creates a fake EC and fixes USB power. Note I do not power off the original EC, reason for this is due to a huge mess around sleep and _GPE. Turning off this EC makes waking a pain without hacky fixes
-* `SSDT-PLUG-X299`: 
-   * Sets `Plugin-type=1` to `SB.SCK0.CP00`
-* `SSDT-SBUS-MCHC`: 
-   * Creates SMBus device allowing AppleSMBus to load
-
-X299 kexts specifics:
-
-* `X299-Map`: 
-   * Maps USB ports, **please make your own as this is just an example**
-* [`VoodooTSCSync`](https://github.com/RehabMan/VoodooTSCSync): 
-   * Synchronize the TSC, **required to boot on Asus X299 and other HEDT systems**
-
-
-Other kexts that are needed regardless of system:
+### Kexts
 
 * [`VirtualSMC`](https://github.com/acidanthera/VirtualSMC)
 * [`Lilu`](https://github.com/vit9696/Lilu/releases)
 * [`AppleALC`](https://github.com/vit9696/AppleALC/releases)
 * [`WhateverGreen`](https://github.com/acidanthera/WhateverGreen/releases)
-  * not needed on MacPro7,1
+  * Not needed on MacPro7,1
+* [`IntelMausiEthernet`](https://github.com/Mieze/IntelMausiEthernet)
+* [`TscAdjustReset`](https://github.com/interferenc/TSCAdjustReset)
+* [`X299-Map`](/Kexts/X299-Map.kext.zip)
+   * Maps USB ports, **please make your own as this is just an example**
 
-Ethernet:
+### config.plist
 
-* [`IntelMausiEthernet`](https://github.com/Mieze/IntelMausiEthernet): For most intel controllers.
+#### ACPI
+
+##### Add
+
+* [SSDT-EC-USBX-X299](../ACPI-Compiled/SSDT-EC-USBX-X299.aml)
+  * Creates a fake EC and fixes USB power. Note I do not power off the original EC, reason for this is due to a huge mess around sleep and _GPE. Turning off this EC makes waking a pain without hacky fixes
+* [SSDT-PLUG-X299](../ACPI-Compiled/SSDT-PLUG-X299.aml)
+  * Sets `Plugin-type=1` to `SB.SCK0.CP00` allowing for proper CPU power management
+* [SSDT-SBUS-MCHC](../ACPI-Compiled/SSDT-SBUS-MCHC.aml)
+   * Creates SMBus device allowing AppleSMBus to load
+* [SSDT-RTC0-RANGE-v3006](../ACPI-Compiled/SSDT-RTC0-RANGE-v3006.aml)
+  * BIOS v2002 and older should use [SSDT-RTC0-RANGE-v2002](../ACPI-Compiled/SSDT-RTC0-RANGE-v2002.aml)
+  
+
+#### Booter
+
+##### Quirks
+
+| Quirk | Enabled | Comment |
+| :--- | :--- | :--- |
+| AvoidRuntimeDefrag | True | Needed to boot |
+| DevirtualiseMmio | True | Adds extra allocation areas |
+| EnableWriteUnprotected | False | Conflicts with RebuildAppleMemoryMap below |
+| ProvideCustomSlide | True | Ensures bad sectors aren't used for booting |
+| RebuildAppleMemoryMap | True | Fix allocations due to memory map issues |
+| SyncRuntimePermissions | True | Needed for booting Windows and linux correctly |
+
+
+#### DeviceProperties
+
+##### PciRoot(0x0)/Pci(0x1F,0x3)
+
+```
+layout-id | Data | 01000000
+```
+
+#### Kernel
+
+##### Quirks
+
+| Quirk | Enabled | Comment |
+| :--- | :--- | :--- |
+| AppleCpuPmCfgLock | True | Needed for BIOS v3006 |
+| AppleXcpmCfgLock | True | Needed for BIOS v3006 |
+| DisableIOMapper | True | Needed if you plan to use VT-D in Windows or Linux |
+| PanicNoKextDump | True | Helps with troubleshooting |
+| PowerTimeoutKernelPanic | True | Helps with audio related kernel panics |
+
+
+#### NVRAM
+
+###### 7C436110-AB2A-4BBB-A880-FE41995C9F82
+
+| arg | value |
+| :--- | :--- |
+| boot-args | -v debug=0x100 keepsyms=1 |
+
+
+#### SMBIOS
+
+* iMacPro1,1 or MacPro7,1 SMBIOS
+  * Note that MacPro7,1 is Catalina+ only
+  * iMacPro1,1 will need WhateverGreen.kext as well
 
 # Hardware Specifics
 
@@ -123,7 +162,7 @@ Main important BIOS settings:
    * If can't disable, turn on `AppleCpuPmCfgLock` and `AppleXcpmCfgLock`. Without this, you won't go far for install.
    * newer BIOS updates do show this option
 * Legacy USB: Disabled
-* Above 4G ecoding: Enabled
+* Above 4G encoding: Enabled
 * CSM: Disabled
 * OS Type: Windows UEFI
 
