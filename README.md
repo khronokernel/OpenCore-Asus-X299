@@ -11,6 +11,8 @@
    * v3105 resolves this issue
  * AWAC clock has been added
    * This will require [SSDT-RTC0-RANGE.dsl](https://github.com/acidanthera/OpenCorePkg/blob/master/Docs/AcpiSamples/SSDT-RTC0-RANGE.dsl)
+* SetupVirtualMap is broken
+  * Can simply disable this quirk, it's not required for booting
  
 ## What work and what doesn't
 
@@ -107,6 +109,7 @@ Alternatively you can also use the sample SSDT-RTC0-RANGE, which may be better s
 | EnableWriteUnprotected | False | Conflicts with RebuildAppleMemoryMap below |
 | ProvideCustomSlide | True | Ensures bad sectors aren't used for booting |
 | RebuildAppleMemoryMap | True | Fix allocations due to memory map issues |
+| SetupVirtualMap | False | BIOS v3006+ break with this quirk enabled |
 | SyncRuntimePermissions | True | Needed for booting Windows and linux correctly |
 
 
