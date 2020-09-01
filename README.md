@@ -3,12 +3,12 @@
 ![](/images/aboutthismac.png)
  
  What's this for? Not too many X299 hardware running macOS, let alone OpenCore so thought I'd post this ;p 
- Please use this as a base **and not a guide** .For a proper guide, please follow the [OpenCore Desktop Guide](https://dortania.github.io/OpenCore-Install-Guide/)
+ Please use this as a base **and not a guide** .For a proper guide, please follow the [OpenCore Install Guide](https://dortania.github.io/OpenCore-Install-Guide/)
  
- **Note**: This system was built with the BIOS Version 2002, and I've had reports that Version 3006 has broken a few things:
+ **Note**: This system was built with the BIOS Version 2002, and I've had reports that Version 3006+ has broken a few things:
  
- * BIOS cannot properly unlock the MSR E2 register
-   * This will require AppleCpuPmCfgLock and AppleXcpmCfgLock enabled
+ * ~~BIOS cannot properly unlock the MSR E2 register~~
+   * v3105 resolves this issue
  * AWAC clock has been added
    * This will require [SSDT-RTC0-RANGE.dsl](https://github.com/acidanthera/OpenCorePkg/blob/master/Docs/AcpiSamples/SSDT-RTC0-RANGE.dsl)
  
@@ -26,14 +26,21 @@ Works:
 * Handoff, AirDrop and all Apple services
 * [Display Brightness and Volume with Apple Keyboard](https://github.com/the0neyouseek/MonitorControl/releases)
 * CPU Name
-   * Easy fix under `PlatformInfo->SMBIOS->ProcessorType->3841`
 * Boot Chime to internal speaker(hooked up a genuine PowerMac speaker!)
 * OpenCore GUI
   * Above 2 will require the resources folder to be populated with files from here: [OcBinaryData](https://github.com/acidanthera/OcBinaryData)
+* Serial Debugging
+  * If you do a lot of kernel debugging like I do, this board will be great. Remember to enable serial in the BIOS and have a [Serial header to DB9](https://www.amazon.ca/gp/product/B001Y1F0HW/ref=ppx_yo_dt_b_asin_title_o00_s00?ie=UTF8&psc=1), and another machine to recieve the signal(if the other machine doesn't have serial, this [DB9 to USB  RS 232 adapter](https://www.amazon.ca/gp/product/B075YGKFC1/ref=ppx_yo_dt_b_asin_title_o00_s01?ie=UTF8&psc=1) will work fine). I recommend having [CoolTerm](https://freeware.the-meiers.org) for serial logging, I found it the simplest to use.
+  * You'll also need the following added to boot-args for proper output:
+  
+```
+debug=0x8 serial=5
+```
 
 Doesn't work:
 
 * Onboard Wifi: Won't work, I removed it and use a genuine Apple Airport BCM94360CD Card with PCIe x1 adapter.
+  * For supported card, see here: [Wireless Buyers guide](https://dortania.github.io/Wireless-Buyers-Guide/)
 * Onboard Bluetooth: Works inconsistently, replaced with BCM94360CD so didn't look into it, see [this thread](https://github.com/daliansky/XiaoMi-Pro-Hackintosh/issues/262) for some ideas.
 * SideCar: Since 10.15.4, I've not been able to get sidecar working, been actively looking for fixes though:  [Sidecar not working on iGPU-less systems reliably](https://github.com/AMD-OSX/bugtracker/issues/1)
  
@@ -69,6 +76,7 @@ Alternatively you can also use the sample SSDT-RTC0-RANGE, which may be better s
   * Not needed on MacPro7,1
 * [`IntelMausiEthernet`](https://github.com/Mieze/IntelMausiEthernet)
 * [`TscAdjustReset`](https://github.com/interferenc/TSCAdjustReset)
+  * Note that this kext needs to be configured to the amount of threads minus 1 in your CPU
 * [`X299-Map`](/Kexts/X299-Map.kext.zip)
    * Maps USB ports, **please make your own as this is just an example**
 
@@ -79,7 +87,7 @@ Alternatively you can also use the sample SSDT-RTC0-RANGE, which may be better s
 ##### Add
 
 * [SSDT-EC-USBX-X299](/ACPI-Compiled/SSDT-EC-USBX-X299.aml)
-  * Creates a fake EC and fixes USB power. Note I do not power off the original EC, reason for this is due to a huge mess around sleep and _GPE. Turning off this EC makes waking a pain without hacky fixes
+  * Creates a fake EC and fixes USB power. Note I do not power off the original EC, reason for this is due to a huge mess around sleep and `_GPE`. Turning off this EC makes waking a pain without hacky fixes
 * [SSDT-PLUG-X299](/ACPI-Compiled/SSDT-PLUG-X299.aml)
   * Sets `Plugin-type=1` to `SB.SCK0.CP00` allowing for proper CPU power management
 * [SSDT-SBUS-MCHC](/ACPI-Compiled/SSDT-SBUS-MCHC.aml)
@@ -116,8 +124,6 @@ layout-id | Data | 01000000
 
 | Quirk | Enabled | Comment |
 | :--- | :--- | :--- |
-| AppleCpuPmCfgLock | True | Needed for BIOS v3006 |
-| AppleXcpmCfgLock | True | Needed for BIOS v3006 |
 | DisableIOMapper | True | Needed if you plan to use VT-D in Windows or Linux |
 | PanicNoKextDump | True | Helps with troubleshooting |
 | PowerTimeoutKernelPanic | True | Helps with audio related kernel panics |
@@ -160,7 +166,7 @@ Main important BIOS settings:
 * CPU Core Ratio: All Core Sync
 * MSR Lock: Disabled
    * If can't disable, turn on `AppleCpuPmCfgLock` and `AppleXcpmCfgLock`. Without this, you won't go far for install.
-   * newer BIOS updates do show this option
+   * Newer BIOS updates do show this option, make sure you're on v3105 for best results
 * Legacy USB: Disabled
 * Above 4G encoding: Enabled
 * CSM: Disabled
