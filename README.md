@@ -16,7 +16,7 @@
  
 ## What work and what doesn't
 
-Works:
+### Works:
 * macOS High Sierra, Mojave, Catalina and Big Sur
   * See below on note regarding Big Sur support
 * Native NVRAM
@@ -24,10 +24,9 @@ Works:
 * Sleep
 * USB power(Including iPad Pro 12.9 Charging!)
 * CPU Power Management
-* iTunes and Netflix
-* Handoff, AirDrop and all Apple services
+* iTunes, Netflix and all other DRM-based content
+* Handoff, AirDrop, Apple Watch Unlock and all other Apple services
 * [Display Brightness and Volume with Apple Keyboard](https://github.com/the0neyouseek/MonitorControl/releases)
-* CPU Name
 * Boot Chime to internal speaker(hooked up a genuine PowerMac speaker!)
 * OpenCore GUI
   * Above 2 will require the resources folder to be populated with files from here: [OcBinaryData](https://github.com/acidanthera/OcBinaryData)
@@ -36,21 +35,21 @@ Works:
   * You'll also need the following added to boot-args for proper output:
   
 ```
-debug=0x8 serial=5
+debug=0x8 msgbuf=1048576 serial=5 
 ```
 
-Doesn't work:
+### Doesn't work:
 
 * Onboard Wifi: Won't work, I removed it and use a genuine Apple Airport BCM94360CD Card with PCIe x1 adapter.
   * For supported card, see here: [Wireless Buyers guide](https://dortania.github.io/Wireless-Buyers-Guide/)
 * Onboard Bluetooth: Works inconsistently, replaced with BCM94360CD so didn't look into it, see [this thread](https://github.com/daliansky/XiaoMi-Pro-Hackintosh/issues/262) for some ideas.
 * SideCar: Since 10.15.4, I've not been able to get sidecar working, been actively looking for fixes though:  [Sidecar not working on iGPU-less systems reliably](https://github.com/AMD-OSX/bugtracker/issues/1)
  
-Big Sur note:
+### Big Sur note:
 
 * To run macOS 11, Big Sur, you'll need the following:
-  * Latest builds of all your kexts
-  * Build of OpenCore 0.6.0
+  * Latest releases of all your kexts
+  * Build of OpenCore 0.6.0 or newer
   * RTC patch
   
 For the last one, this is due to Asus not mapping all the RTC regions for some reason. Specifically skipping regions 0x72 and 0x73. And in Big Sur, AppleRTC gets a lot saltier with this and won't boot. So we force in the extra regions with a simple 0x02 to 0x04 replace, see below patch:
@@ -71,14 +70,14 @@ Alternatively you can also use the sample SSDT-RTC0-RANGE, which may be better s
 
 ### Kexts
 
-* [`VirtualSMC`](https://github.com/acidanthera/VirtualSMC)
 * [`Lilu`](https://github.com/vit9696/Lilu/releases)
+* [`VirtualSMC`](https://github.com/acidanthera/VirtualSMC)
 * [`AppleALC`](https://github.com/vit9696/AppleALC/releases)
 * [`WhateverGreen`](https://github.com/acidanthera/WhateverGreen/releases)
   * Not needed on MacPro7,1
 * [`IntelMausiEthernet`](https://github.com/Mieze/IntelMausiEthernet)
-* [`TscAdjustReset`](https://github.com/interferenc/TSCAdjustReset)
-  * Note that this kext needs to be configured to the amount of threads minus 1 in your CPU
+* [`CpuTscSync`](https://github.com/lvs1974/CpuTscSync)
+  * Required to resolve TSC sync issues and aid with wake
 * [`X299-Map`](/Kexts/X299-Map.kext.zip)
    * Maps USB ports, **please make your own as this is just an example**
 
@@ -96,6 +95,9 @@ Alternatively you can also use the sample SSDT-RTC0-RANGE, which may be better s
    * Creates SMBus device allowing AppleSMBus to load
 * [SSDT-RTC0-RANGE-v3006](/ACPI-Compiled/SSDT-RTC0-RANGE-v3006.aml)
   * BIOS v2002 and older should use [SSDT-RTC0-RANGE-v2002](/ACPI-Compiled/SSDT-RTC0-RANGE-v2002.aml)
+* [SSDT-BRG0-X299](/ACPI-Compiled/SSDT-BRG0-X299.aml)
+  * Enforces an ACPI path for the dGPU in the top slot, required for macOS Big Sur if you require DeviceProperty injection
+  * Adjust accordingly if the dGPU is in another slot
   
 
 #### Booter
@@ -112,13 +114,25 @@ Alternatively you can also use the sample SSDT-RTC0-RANGE, which may be better s
 | SetupVirtualMap | False | BIOS v3006+ break with this quirk enabled |
 | SyncRuntimePermissions | True | Needed for booting Windows and linux correctly |
 
-
 #### DeviceProperties
 
 ##### PciRoot(0x0)/Pci(0x1F,0x3)
 
+To enable the on-board ALC S1220A
+
 ```
 layout-id | Data | 01000000
+```
+
+##### PciRoot(0x2)/Pci(0x0,0x0)/Pci(0x0,0x0)/Pci(0x0,0x0)/Pci(0x0,0x0)
+
+Used for fixing Navi GPUs when using WhateverGreen and iMacPro1,1, this arg is not required if you don't use WEG(ie. MacPro7,1)
+
+* Note this assumes the Navi GPU is in the top slot, adjust accordingly to your board
+* macOS 11, Big Sur, will also require SSDT-BRG0-X299 for this to work correctly
+
+```
+agdpmod | String | Pikera 
 ```
 
 #### Kernel
@@ -154,10 +168,11 @@ Hardware:
 * Noctua NH D15
 * Asus Strix X299-E Gaming
 * Multiple GPUs tested:
-  * GT 710
-  * MSI Armour RX 580
-  * MSI AirBoost Vega 56
-  * Gigabyte RX 5700XT
+  * Pegatron GT 220 1GB
+  * HP GT 710 2GB
+  * MSI Armour RX 580 8GB
+  * MSI AirBoost Vega 56 8GB
+  * Gigabyte RX 5700XT 8GB
     * This guy will need either `agdpmod=pikera` on iMacPro1,1 or remove WhateverGreen entirely for MacPro7,1
 * WD Black SN750 1TB NVMe
 * 32GB 2666Mhz (4x8GB)
